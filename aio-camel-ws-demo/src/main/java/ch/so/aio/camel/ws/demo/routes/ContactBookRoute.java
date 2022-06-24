@@ -9,7 +9,7 @@ public class ContactBookRoute extends RouteBuilder {
 
     @Override
     public void configure() {
-        from("timer://contactBookTimer?fixedRate=true&period={{timer.period}}")
+        from("timer://contactBookTimer?fixedRate=true&period={{demo.timer.period}}")
                 .id("contact-book-timer")
                 .to("direct:start");
 
@@ -26,11 +26,7 @@ public class ContactBookRoute extends RouteBuilder {
                             </soapenv:Body>
                         </soapenv:Envelope>
                         """))
-                .to("""
-                        cxf://https://contactbook-uudvvca52q-oa.a.run.app/contactbook\
-                        ?serviceClass=org.example.contactbook.ContactBook\
-                        &wsdlURL=https://contactbook-uudvvca52q-oa.a.run.app/contactbook?wsdl\
-                        &dataFormat=RAW""")
+                .to("cxf://{{demo.ws.url}}?serviceClass=org.example.contactbook.ContactBook&wsdlURL={{demo.ws.wsdl}}&dataFormat=RAW")
                 .to("direct:in");
 
         from("direct:in")
@@ -40,6 +36,6 @@ public class ContactBookRoute extends RouteBuilder {
 
         from("direct:out")
                 .id("contact-book-output-file")
-                .to("file:{{output.directory}}?fileName=contactbook_${date:now:yyyyMMdd_HHmmss}.html");
+                .to("file:{{demo.output.directory}}?fileName=contactbook_${date:now:yyyyMMdd_HHmmss}.html");
     }
 }
